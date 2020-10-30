@@ -10,6 +10,15 @@ const passport = require('passport');
 const LocalStrategy = require('passport-local').Strategy;
 const session = require('express-session');
 const flash = require('connect-flash');
+const passportLocalMongoose = require('passport-local-mongoose');
+
+// const UserDetail = new mongoose.Schema({
+//   username: String,
+//   password: String
+// });
+
+// UserDetail.plugin(passportLocalMongoose);
+// const UserDetails = mongoose.model('userInfo', UserDetail, 'userInfo');
 
 
 var indexRouter = require('./routes/index');
@@ -18,6 +27,8 @@ var questionsRouter = require('./routes/questions');
 
 
 var app = express();
+require("./config/passport")(passport);
+
 const connectionString = "mongodb+srv://danno:ow9PM1kgeCy91dlB@cluster0.bgssz.mongodb.net/questionsdb?retryWrites=true&w=majority"
 
 mongoose.connect(
@@ -63,17 +74,21 @@ app.use(session({
 
 app.use(passport.initialize());
 app.use(passport.session());
+// passport.use(UserDetails.createStrategy());
 
-passport.use(new LocalStrategy(
-  function(username, password, done) {
-    User.findOne({ username: username }, function (err, user) {
-      if (err) { return done(err); }
-      if (!user) { return done(null, false); }
-      if (!user.verifyPassword(password)) { return done(null, false); }
-      return done(null, user);
-    });
-  }
-));
+// passport.use(new LocalStrategy(
+//   function(username, password, done) {
+//     User.findOne({ username: username }, function (err, user) {
+//       if (err) { return done(err); }
+//       if (!user) { return done(null, false); }
+//       if (!user.verifyPassword(password)) { return done(null, false); }
+//       return done(null, user);
+//     });
+//   }
+// ));
+// passport.serializeUser(UserDetails.serializeUser());
+// passport.deserializeUser(UserDetails.deserializeUser());
+
 app.use('/', indexRouter);
 app.use('/users', usersRouter);
 app.use('/questions', questionsRouter);
