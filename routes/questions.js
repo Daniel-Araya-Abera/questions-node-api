@@ -2,10 +2,11 @@ var express = require('express');
 var router = express.Router();
 const ObjectID = require('mongodb').ObjectID;
 const Question = require('../models/questions');
+const {ensureAuthenticated } = require("../config/auth");
 
 
 /* POST a question. */                      //-----------------------------> WORKING
-router.post('/', function(req, res, next) {
+router.post('/', ensureAuthenticated,function(req, res, next) {
   // const questions = req.app.locals.questions;
   const document = req.body;
   if (!req.body.title || !req.body.description) {
@@ -24,7 +25,7 @@ router.post('/', function(req, res, next) {
   });
 
   newQuestion.save();
-  res.status(202);
+  res.status(202).send(newQuestion);
     
 
 });
@@ -54,7 +55,7 @@ router.get('/', async (req, res, next) => {
 });
 
 // /* GET a single question with specified id. */      -----------------------------> WORKING
-router.get('/:id', function(req, res, next) {
+router.get('/:id', ensureAuthenticated,function(req, res, next) {
   // const questions = req.app.locals.questions;
   const id = ObjectID(req.params.id);
   // questions.findOne({_id: id})
@@ -67,7 +68,7 @@ router.get('/:id', function(req, res, next) {
 
   
 // /* UPDATE a question with specified id. */              // ---------->  WORKING
-router.patch('/:id', async (req, res, next) => {
+router.patch('/:id', ensureAuthenticated,async (req, res, next) => {
   var updateObject = req.body; // {last_name : "smith", age: 44}
   const id = ObjectID(req.params.id);
   // Question.updateOne({_id  : id}, {$set: updateObject});
@@ -80,7 +81,7 @@ router.patch('/:id', async (req, res, next) => {
 
 
 //   /* REPLACE a question with specified id. */ -----------------------------> WORKING
-  router.put('/:id/', async (req, res, next) => {
+  router.put('/:id/', ensureAuthenticated,async (req, res, next) => {
     // const questions = req.app.locals.questions;
     // const id = ObjectID(req.params.id);
     // const newDocument = req.body;
@@ -118,7 +119,7 @@ router.patch('/:id', async (req, res, next) => {
 
   
 // /* DELETE a question with specified id. */
-router.delete('/:id', async (req, res, next) => {
+router.delete('/:id', ensureAuthenticated,async (req, res, next) => {
     // const questions = req.app.locals.questions;
     // const id = ObjectID(req.params.id);
   
